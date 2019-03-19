@@ -13,8 +13,12 @@ class PesquisaController extends Controller
     $pesquisa =
       DB::table("pesquisa AS p")
         ->select("p.cd_pesquisa", "p.nm_pesquisa")
+        ->join("pesquisa_pergunta AS pp", "pp.cd_pesquisa", "=", "p.cd_pesquisa")
+        ->join("pergunta_vaga     AS pv", "pv.cd_pergunta", "=", "pp.cd_pergunta")
         ->where("dt_inicial", "<=", date("Y-m-d"))
-        //->where("dt_final",   ">=", date("Y-m-d"))
+        ->where("dt_final",   ">=", date("Y-m-d"))
+        ->where("pv.cd_vaga", "=", $this->obtemContratoFuncionario()->cd_vaga)
+        ->distinct()
         ->get();
     
     return view("seleciona_pesquisa")->with("data", $pesquisa);
@@ -27,11 +31,11 @@ class PesquisaController extends Controller
         ->select("p.cd_pesquisa", "pp.cd_pergunta", "pp.ds_pergunta", "pp.id_tipo", "pp.id_obrigatorio", "poi.cd_pergunta_opcao_item", "poi.nm_pergunta_opcao_item")
           ->join("pesquisa_pergunta AS pp", "pp.cd_pesquisa", "=", "p.cd_pesquisa")
           ->join("pergunta_opcao AS po", "po.cd_pergunta_opcao", "=", "pp.cd_pergunta_opcao")
+          ->join("pergunta_vaga  AS pv", "pv.cd_pergunta", "=", "pp.cd_pergunta")
           ->leftjoin("pergunta_opcao_item AS poi", "poi.cd_pergunta_opcao", "=", "po.cd_pergunta_opcao")
-          ->where("dt_inicial", "<=", date("Y-m-d"))
-          //->where("dt_final",   ">=", date("Y-m-d"))
           ->where("p.cd_pesquisa", "=", $id)
           ->where("pp.id_tipo", "<>", "4")
+          ->where("pv.cd_vaga", "=", $this->obtemContratoFuncionario()->cd_vaga)
           ->orderBy("p.cd_pesquisa", "pp.cd_pergunta")
           ->get();
     
@@ -65,5 +69,15 @@ class PesquisaController extends Controller
     }
     
     return redirect("/pesquisa")->with("status", "Pesquisa respondida com sucesso!");
+  }
+  
+  protected function obtemContratoFuncionario()
+  {
+    return
+      DB::table("contrato_funcionario AS cf")
+        ->where("cf.dt_admissao", "<=", date('Y-m-d'))
+        ->whereNull("dt_aviso_previo")
+        ->where("cf.cd_pessoa", "=", Auth::user()->cd_pessoa)
+        ->get()->first();
   }
 }
