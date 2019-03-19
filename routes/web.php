@@ -12,15 +12,15 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+  return redirect()->action("PesquisaController@index");
 });
 
-Auth::routes();
+Auth::routes(['register' => false]);
 
-Route::get('/home', 'HomeController@index')->name('home');
+//Route::get('/home', 'HomeController@index')->name('home');
 
 Route::group(['middleware' => 'auth', 'prefix' => '/pesquisa'], function(){
   Route::get("/",               "PesquisaController@index");
-  Route::get("/responder/{id}", "PesquisaController@responder");
+  Route::get("/responder/{id}", "PesquisaController@responder")->where('id', '[0-9]+');
   Route::post("/registraRespostas", "PesquisaController@registraRespostas");
 });

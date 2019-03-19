@@ -13,6 +13,8 @@ class User extends Authenticatable
     
     protected $primaryKey = "cd_pessoa";
     
+    protected $rememberTokenName = '';
+    
     /**
      * The attributes that are mass assignable.
      *

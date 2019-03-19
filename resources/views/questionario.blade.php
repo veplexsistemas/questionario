@@ -93,6 +93,8 @@
     
     
     $submit = new \VMaker\VInputSubmit("submit", "Enviar");
+    $submit->setClass("btn btn-success");
+    $submit->setStyle("width: 100%");
     $form->addInputField($submit);
   }
   
