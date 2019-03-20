@@ -47,7 +47,8 @@ class LoginController extends Controller
     {
       $user = \App\User::where([
           'ds_apelido' => $request->ds_apelido,
-          'ds_senha'   => md5($request->password)
+          'ds_senha'   => md5($request->password),
+          'id_ativo'   => 1
       ])->first();
       
       if ($user)
