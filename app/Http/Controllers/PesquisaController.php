@@ -33,7 +33,7 @@ class PesquisaController extends Controller
   {
     $questionario =
       DB::table("pesquisa AS p")
-        ->select("p.cd_pesquisa", "pp.cd_pergunta", "pp.ds_pergunta", "pp.id_tipo", "pp.id_obrigatorio", "poi.cd_pergunta_opcao_item", "poi.nm_pergunta_opcao_item")
+        ->select("p.cd_pesquisa", "pp.cd_pergunta", "pp.ds_pergunta", "pp.id_tipo", "pp.id_obrigatorio", "poi.cd_pergunta_opcao_item", "poi.nm_pergunta_opcao_item", "poi.nr_ordem")
           ->join("pesquisa_pergunta AS pp", "pp.cd_pesquisa", "=", "p.cd_pesquisa")
           ->join("pergunta_opcao AS po", "po.cd_pergunta_opcao", "=", "pp.cd_pergunta_opcao")
           ->join("pergunta_vaga  AS pv", "pv.cd_pergunta", "=", "pp.cd_pergunta")
@@ -41,7 +41,10 @@ class PesquisaController extends Controller
           ->where("p.cd_pesquisa", "=", $id)
           ->where("pp.id_tipo", "<>", "4")
           ->where("pv.cd_vaga", "=", $this->obtemContratoFuncionario()->cd_vaga)
-          ->orderBy("p.cd_pesquisa", "pp.cd_pergunta")
+          ->distinct()
+          ->orderBy("p.cd_pesquisa")
+          ->orderBy("pp.cd_pergunta")
+          ->orderBy("poi.nr_ordem")
           ->get();
     
     return view('questionario')->with("data", $questionario);
