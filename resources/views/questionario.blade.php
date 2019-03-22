@@ -51,18 +51,21 @@
           case "1": //Texto
             $ds_resposta = new \VMaker\VInputText($id);
             $ds_resposta->setLabel($obj->ds_pergunta);
+            $ds_resposta->setExtraLabel($obj->ds_comentario);
             $ds_resposta->setRequired($obj->id_obrigatorio);
           break;
 
           case "2": //Número
             $ds_resposta = new \VMaker\VInputNumber($id);
             $ds_resposta->setLabel($obj->ds_pergunta);
+            $ds_resposta->setExtraLabel($obj->ds_comentario);
             $ds_resposta->setRequired($obj->id_obrigatorio);
           break;
 
           case "3": //Seleção
             $ds_resposta = new \VMaker\VInputSelect($id);
             $ds_resposta->setLabel($obj->ds_pergunta);
+            $ds_resposta->setExtraLabel($obj->ds_comentario);
             $ds_resposta->setRequired($obj->id_obrigatorio);
             $ds_resposta->setOpcional();
             $ds_resposta->addOption($obj->cd_pergunta_opcao_item, $obj->nm_pergunta_opcao_item);
