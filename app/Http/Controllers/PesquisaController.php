@@ -53,7 +53,7 @@ class PesquisaController extends Controller
       $this->dados
         ->select("p.cd_pesquisa", "pp.nr_ordem AS nr_ordem_pergunta", "pp.cd_pergunta", "pp.ds_pergunta", "pp.id_tipo", 
                  "pp.id_obrigatorio", "poi.cd_pergunta_opcao_item", "poi.nm_pergunta_opcao_item", 
-                 "poi.nr_ordem", "pp.ds_comentario")
+                 "poi.nr_ordem", "pp.ds_comentario", "p.ds_pesquisa")
         ->where("p.cd_pesquisa", "=", $id)
         ->orderBy("p.cd_pesquisa")
         ->orderBy("pp.nr_ordem")

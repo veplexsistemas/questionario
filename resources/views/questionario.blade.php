@@ -101,7 +101,16 @@
     $form->addInputField($submit);
   }
   
-  $panel->addBody($form->make());
+  if (isset($data[0]->ds_pesquisa))
+  {
+    $panelDescricao = new VPanel();
+    $panelDescricao->setClass("panel panel-info");
+    $panelDescricao->addHeading("<i class=\"fas fa-info-circle\"></i> {$data[0]->ds_pesquisa}");
+    
+    $panel->addBody($panelDescricao->make() . $form->make());
+  }
+  else
+    $panel->addBody($form->make());
   
   $html->addObject($panel);
   
