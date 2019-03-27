@@ -2676,16 +2676,16 @@
         },
         {
             "name": "vmaker/html",
-            "version": "1.1.57",
+            "version": "1.1.61",
             "source": {
                 "type": "git",
                 "url": "https://github.com/veplexsistemas/vmaker.git",
-                "reference": "e5409d9b2fb80a13ee67519c1aa959a724695975"
+                "reference": "1b8c20cd592f7504a70104eb1fda54a79351e68c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/veplexsistemas/vmaker/zipball/e5409d9b2fb80a13ee67519c1aa959a724695975",
-                "reference": "e5409d9b2fb80a13ee67519c1aa959a724695975",
+                "url": "https://api.github.com/repos/veplexsistemas/vmaker/zipball/1b8c20cd592f7504a70104eb1fda54a79351e68c",
+                "reference": "1b8c20cd592f7504a70104eb1fda54a79351e68c",
                 "shasum": ""
             },
             "require": {
@@ -2719,7 +2719,7 @@
                     "email": "comercial@veplex.com.br"
                 }
             ],
-            "time": "2019-03-22 18:39:27"
+            "time": "2019-03-27 12:51:31"
         },
         {
             "name": "wcadena/laravel-string-blade-compiler",

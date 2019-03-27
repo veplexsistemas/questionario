@@ -6,7 +6,6 @@
   //Html
   $html = new VHtml("layouts.app");
   $html->openSection("content");
-  $html->addContent("<h3>Selecione uma Pesquisa</h3>");
   
   //Status
   if ($status = session("status"))
@@ -21,7 +20,7 @@
   $grid = new VDataGrid();
   $grid->setShowPagination(false);
   $grid->setData($data);
-  $grid->setFields(["nm_pesquisa" => ""]);
+  $grid->setFields(["nm_pesquisa" => "Pesquisas"]);
   
   $grid->addExtraField("", "<i class=\"fas fa-check\"></i> Responder", "/pesquisa/responder", ["cd_pesquisa"], "btn btn-primary btn-sm");
   
