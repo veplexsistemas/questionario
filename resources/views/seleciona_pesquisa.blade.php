@@ -20,7 +20,7 @@
   $grid = new VDataGrid();
   $grid->setShowPagination(false);
   $grid->setData($data);
-  $grid->setFields(["nm_pesquisa" => "Pesquisas"]);
+  $grid->setFields(["nm_pesquisa" => "Selecione uma pesquisa"]);
   
   $grid->addExtraField("", "<i class=\"fas fa-check\"></i> Responder", "/pesquisa/responder", ["cd_pesquisa"], "btn btn-primary btn-sm");
   

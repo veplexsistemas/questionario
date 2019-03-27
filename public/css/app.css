@@ -12,3 +12,7 @@
    font-style: italic;
    font-size: 10pt;
 }
+
+th{
+    text-align: left !important;
+}
