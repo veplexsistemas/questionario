@@ -3,9 +3,17 @@
   use VMaker\VPanel;
   use VMaker\VForm;
   
+  $js = "
+    $(document).ready(function(){
+      $('form').submit(function(){
+        $('#submit').attr('disabled', true);
+      });
+    });";
+  
   //Html
   $html = new VHtml("layouts.app");
   $html->openSection("content");
+  $html->addScript($js);
   
   //Panel
   $panel = new VPanel();

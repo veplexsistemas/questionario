@@ -15,6 +15,9 @@
     
     <!-- Fontawesome -->
     <link rel="stylesheet" href="{{ asset('fontawesome/css/all.css') }}">
+    
+    <!-- JQuery -->
+    <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
 </head>
 <body>
     <div id="app">
