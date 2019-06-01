@@ -29,7 +29,7 @@ class PesquisaController extends Controller
         ->where("pp.id_tipo", "<>", "4")
         ->whereNull("pres.cd_pergunta")
         ->where("p.dt_inicial", "<=", date("Y-m-d"))
-        //->where("p.dt_final",   ">=", date("Y-m-d"))
+        ->where("p.dt_final",   ">=", date("Y-m-d"))
         ->where("pv.cd_vaga", "=", $this->obtemContratoFuncionario()->cd_vaga)
         ->distinct();
   }
