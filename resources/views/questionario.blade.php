@@ -23,6 +23,7 @@
   //Form
   $form = new VForm();
   $form->setAction("PesquisaController@registraRespostas");
+  $form->setErrors($errors);
   
   if (is_object($data))
   {
@@ -39,7 +40,12 @@
         if ($cd_pergunta_old)
         {
           $form->addInputField($ds_resposta);
+          
+          if (isset($ds_justificativa) && is_object($ds_justificativa))
+            $form->addInputField($ds_justificativa);
+
           unset($ds_resposta);
+          unset($ds_justificativa);
         }
         
         $t_qt_perguntas++;
@@ -89,6 +95,12 @@
          * 
          */
         }
+
+        if (isset($obj->vl_nota_justificativa) && ($t_cd_pergunta != $cd_pergunta_old))
+        {
+          $ds_justificativa = new \VMaker\VInputText("ds_justificativa_{$t_qt_perguntas}");
+          $ds_justificativa->setExtraLabel("(Justificativa) Se a resposta for menor que {$obj->vl_nota_justificativa} a justificativa será obrigatória!");
+        }
       }
       elseif ($ds_resposta instanceof \VMaker\VInputSelect)
         $ds_resposta->addOption($obj->cd_pergunta_opcao_item, $obj->nm_pergunta_opcao_item);
@@ -97,12 +109,15 @@
     }
     
     $form->addInputField($ds_resposta);
-    
+
+    if (isset($ds_justificativa) && is_object($ds_justificativa))
+      $form->addInputField($ds_justificativa);
+
     //qt_perguntas
     $qt_perguntas = new \VMaker\VInputHidden("qt_perguntas", $t_qt_perguntas);
     $form->addInputField($qt_perguntas);
     
-    
+
     $submit = new \VMaker\VInputSubmit("submit", "Enviar");
     $submit->setClass("btn btn-success");
     $submit->setStyle("width: 100%");

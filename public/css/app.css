@@ -16,3 +16,8 @@
 th{
     text-align: left !important;
 }
+
+.is-invalid
+{
+    border-color: red;
+}

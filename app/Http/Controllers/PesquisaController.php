@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\QuestionarioRequest;
 
 class PesquisaController extends Controller
 {
@@ -28,7 +29,7 @@ class PesquisaController extends Controller
         ->where("pp.id_tipo", "<>", "4")
         ->whereNull("pres.cd_pergunta")
         ->where("p.dt_inicial", "<=", date("Y-m-d"))
-        ->where("p.dt_final",   ">=", date("Y-m-d"))
+        //->where("p.dt_final",   ">=", date("Y-m-d"))
         ->where("pv.cd_vaga", "=", $this->obtemContratoFuncionario()->cd_vaga)
         ->distinct();
   }
@@ -40,7 +41,7 @@ class PesquisaController extends Controller
     $pesquisa = 
       $this->dados
         ->select("p.cd_pesquisa", "p.nm_pesquisa")
-        ->get();
+        ->paginate();
       
     return view("seleciona_pesquisa")->with("data", $pesquisa);
   }
@@ -53,7 +54,7 @@ class PesquisaController extends Controller
       $this->dados
         ->select("p.cd_pesquisa", "pp.nr_ordem AS nr_ordem_pergunta", "pp.cd_pergunta", "pp.ds_pergunta", "pp.id_tipo", 
                  "pp.id_obrigatorio", "poi.cd_pergunta_opcao_item", "poi.nm_pergunta_opcao_item", 
-                 "poi.nr_ordem", "pp.ds_comentario", "p.ds_pesquisa")
+                 "poi.nr_ordem", "pp.ds_comentario", "p.ds_pesquisa", "pp.vl_nota_justificativa", "poi.vl_peso")
         ->where("p.cd_pesquisa", "=", $id)
         ->orderBy("p.cd_pesquisa")
         ->orderBy("pp.nr_ordem")
@@ -64,7 +65,7 @@ class PesquisaController extends Controller
     return view('questionario')->with("data", $questionario);
   }
   
-  public function registraRespostas(Request $request)
+  public function registraRespostas(QuestionarioRequest $request)
   {
     $t_qt_perguntas = $request->get("f_qt_perguntas");
     
@@ -73,12 +74,14 @@ class PesquisaController extends Controller
       $t_cd_pergunta      = $request->get("f_cd_pergunta_{$i}");
       $t_id_tipo_pergunta = $request->get("f_id_tipo_pergunta_{$i}");
       $t_ds_resposta      = $request->get("f_ds_resposta_{$i}");
+      $t_ds_justificativa = $request->get("f_ds_justificativa_{$i}");
       
       $PesquisaResposta = new \App\PesquisaResposta();
       $PesquisaResposta->cd_pergunta         = $t_cd_pergunta;
       $PesquisaResposta->cd_usuario_resposta = Auth::user()->cd_pessoa;
       $PesquisaResposta->dt_resposta         = date('c');
       $PesquisaResposta->ds_resposta         = ($t_id_tipo_pergunta != 3 ? $t_ds_resposta : "");
+      $PesquisaResposta->ds_justificativa    = $t_ds_justificativa;
       $PesquisaResposta->save();
       
       if ($t_id_tipo_pergunta == 3)

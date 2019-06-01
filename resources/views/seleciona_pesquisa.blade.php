@@ -33,7 +33,7 @@
     $panel = new VPanel();
     $panel->setClass("panel panel-info");
     $panel->addHeading("<i class=\"fas fa-info-circle\"></i> Informação");
-    $panel->addBody("Você não possui pesquisas para responder no momento.");
+    $panel->addBody("Você não possui pesquisas ou já respondeu a pesquisa neste mês.");
     $html->addObject($panel);
   }
   
