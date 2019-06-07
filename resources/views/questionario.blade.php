@@ -128,7 +128,7 @@
   {
     $panelDescricao = new VPanel();
     $panelDescricao->setClass("panel panel-info");
-    $panelDescricao->addHeading("<i class=\"fas fa-info-circle\"></i> {$data[0]->ds_pesquisa}");
+    $panelDescricao->addHeading("<i class=\"fas fa-info-circle\"></i> ".nl2br($data[0]->ds_pesquisa));
     
     $panel->addBody($panelDescricao->make() . $form->make());
   }
