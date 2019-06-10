@@ -98,8 +98,10 @@
 
         if (isset($obj->vl_nota_justificativa) && ($t_cd_pergunta != $cd_pergunta_old))
         {
+          $vlNotaJustificativa = ($obj->vl_nota_justificativa - 10) / 10;
+
           $ds_justificativa = new \VMaker\VInputText("ds_justificativa_{$t_qt_perguntas}");
-          $ds_justificativa->setExtraLabel("(Justificativa) Se a resposta for menor que {$obj->vl_nota_justificativa} a justificativa será obrigatória!");
+          $ds_justificativa->setExtraLabel("(Justificativa) Favor justificar se a sua resposta for menor ou igual a {$vlNotaJustificativa}.");
         }
       }
       elseif ($ds_resposta instanceof \VMaker\VInputSelect)
