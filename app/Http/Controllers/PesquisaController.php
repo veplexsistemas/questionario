@@ -42,8 +42,58 @@ class PesquisaController extends Controller
       $this->dados
         ->select("p.cd_pesquisa", "p.nm_pesquisa")
         ->paginate();
-      
+/*
+    $avaliacao = DB::table("pesquisa_pergunta AS pp")
+      ->join("contrato_funcionario AS cf", "cf.cd_vaga", "=", "pp.cd_vaga_responsavel")
+      ->join("pesquisa_resposta AS pr", "pr.cd_pergunta", "=", "pp.cd_pergunta")
+      ->join("pessoa AS p", "p.cd_pessoa", "=", "pr.cd_usuario_resposta")
+      ->whereRaw("(dt_aviso_previo IS NULL OR dt_aviso_previo > CURRENT_DATE)")
+      ->where("cf.cd_pessoa", "=", Auth::user()->cd_pessoa)
+      ->where("pp.cd_pesquisa", "=", "45")
+      ->where("pr.id_analisada", "<>", "1")
+      ->whereRaw("pr.dt_resposta >= TO_CHAR(CURRENT_DATE , 'YYYY-MM-01')::DATE - INTERVAL '1' MONTH")
+      ->whereRaw("pr.dt_resposta < TO_CHAR(CURRENT_DATE , 'YYYY-MM-01')::DATE")
+      ->whereRaw("pr.ds_justificativa IS NOT NULL")
+      ->selectRaw("pr.cd_resposta, pr.cd_usuario_resposta, p.nm_pessoa, pr.cd_pergunta, 
+               TO_CHAR(pr.dt_resposta, 'DD/MM/YYYY') AS dt_resposta, pr.ds_justificativa, pr.id_identificado")
+      ->orderBy("pr.dt_resposta")
+      ->get();
+
+    $nota = DB::table("pesquisa_pergunta AS pp")
+      ->join("contrato_funcionario AS cf", "cf.cd_vaga", "=", "pp.cd_vaga_responsavel")
+      ->join("pesquisa_resposta AS pr", "pr.cd_pergunta", "=", "pp.cd_pergunta")
+      ->join("pessoa AS p", "p.cd_pessoa", "=", "pr.cd_usuario_resposta")
+      ->join("pesquisa_resposta_alternativa AS pra", "pra.cd_resposta", "=","pr.cd_resposta")
+      ->join("pergunta_opcao_item AS poi", "poi.cd_pergunta_opcao_item", "=","pra.cd_pergunta_opcao_item")
+      ->whereRaw("(dt_aviso_previo IS NULL OR dt_aviso_previo > CURRENT_DATE)")
+      ->where("cf.cd_pessoa", "=", Auth::user()->cd_pessoa)
+      ->where("pp.cd_pesquisa", "=", "45")
+      ->where("poi.vl_peso", "<>", null)
+      ->whereRaw("pr.dt_resposta >= TO_CHAR(CURRENT_DATE , 'YYYY-MM-01')::DATE - INTERVAL '1' MONTH")
+      ->whereRaw("pr.dt_resposta < TO_CHAR(CURRENT_DATE , 'YYYY-MM-01')::DATE")
+      ->selectRaw("ROUND(SUM(poi.vl_peso) / COUNT(*), 1) AS vl_media, TO_CHAR(CURRENT_DATE - INTERVAL '1' MONTH, 'MM/YYYY') AS dt_mes")
+      ->get();
+    
+    $comunicacao = DB::table("pesquisa_pergunta AS pp")
+      ->join("pesquisa_resposta AS pr", "pr.cd_pergunta", "=", "pp.cd_pergunta")
+      ->join("pessoa AS p", "p.cd_pessoa", "=", "pr.cd_usuario_analise")
+      ->where("pp.cd_pesquisa", "=", "45")
+      ->where("pr.cd_usuario_resposta", "=", "50020")
+      ->whereRaw("pr.dt_analise >= TO_CHAR(CURRENT_DATE , 'YYYY-MM-01')::DATE - INTERVAL '1' MONTH")
+      ->whereRaw("pr.dt_analise < TO_CHAR(CURRENT_DATE , 'YYYY-MM-01')::DATE + INTERVAL '1' MONTH")
+      ->selectRaw("pp.ds_pergunta, COALESCE(pr.ds_analise, 'Sem descrição') AS ds_analise, pr.cd_usuario_analise, p.nm_pessoa,
+                   TO_CHAR(pr.dt_analise, 'DD/MM/YYYY') AS dt_analise, pr.ds_justificativa")
+      ->get();
+*/
+
+ 
+
     return view("seleciona_pesquisa")->with("data", $pesquisa);
+/*                             
+                                     ->with("avaliacao", $avaliacao)
+                                     ->with("nota", $nota)
+                                     ->with("comunicacao", $comunicacao);
+*/
   }
   
   public function responder($id)
@@ -55,6 +105,13 @@ class PesquisaController extends Controller
         ->select("p.cd_pesquisa", "pp.nr_ordem AS nr_ordem_pergunta", "pp.cd_pergunta", "pp.ds_pergunta", "pp.id_tipo", 
                  "pp.id_obrigatorio", "poi.cd_pergunta_opcao_item", "poi.nm_pergunta_opcao_item", 
                  "poi.nr_ordem", "pp.ds_comentario", "p.ds_pesquisa", "pp.vl_nota_justificativa", "poi.vl_peso")
+        ->selectRaw("(SELECT ds_analise 
+                        FROM pesquisa_resposta 
+                       WHERE cd_usuario_resposta = ".Auth::user()->cd_pessoa." 
+                         AND cd_pergunta = pp.cd_pergunta
+                         AND dt_resposta >= TO_CHAR(CURRENT_DATE , 'YYYY-MM-01')::DATE - INTERVAL '1' MONTH 
+                         AND dt_resposta < TO_CHAR(CURRENT_DATE , 'YYYY-MM-01')::DATE
+                       LIMIT 1) AS ds_analise")
         ->where("p.cd_pesquisa", "=", $id)
         ->orderBy("p.cd_pesquisa")
         ->orderBy("pp.nr_ordem")
@@ -65,6 +122,27 @@ class PesquisaController extends Controller
     return view('questionario')->with("data", $questionario);
   }
   
+  public function registraAnalise(QuestionarioRequest $request)
+  {
+    $t_qt_perguntas = $request->get("f_qt_perguntas");
+
+    for ($i = 1; $i <= $t_qt_perguntas; $i++)
+    {
+      $t_cd_resposta = $request->get("f_cd_resposta_{$i}");
+      $t_ds_analise  = $request->get("f_ds_analise_{$i}");
+      
+      $resposta = \App\PesquisaResposta::find($t_cd_resposta);
+      $resposta->id_analisada       = 1;
+      $resposta->ds_analise         = $t_ds_analise;
+      $resposta->dt_analise         = date('Y-m-d');
+      $resposta->cd_usuario_analise = Auth::user()->cd_pessoa;
+
+      $resposta->save();
+    }
+
+    return $this->index();
+  }
+
   public function registraRespostas(QuestionarioRequest $request)
   {
     $t_qt_perguntas = $request->get("f_qt_perguntas");
@@ -75,6 +153,17 @@ class PesquisaController extends Controller
       $t_id_tipo_pergunta = $request->get("f_id_tipo_pergunta_{$i}");
       $t_ds_resposta      = $request->get("f_ds_resposta_{$i}");
       $t_ds_justificativa = $request->get("f_ds_justificativa_{$i}");
+      $t_id_identificado  = $request->get("f_id_identificado_{$i}");
+      
+      $PesquisaRespostaE = DB::table('pesquisa_resposta')
+        ->whereRaw("cd_usuario_resposta = ". Auth::user()->cd_pessoa)
+        ->whereRaw("cd_pergunta = {$t_cd_pergunta}")
+        ->whereRaw("dt_resposta >= TO_CHAR(CURRENT_DATE , 'YYYY-MM-01')::DATE")
+        ->whereRaw("dt_resposta < TO_CHAR(CURRENT_DATE , 'YYYY-MM-01')::DATE + INTERVAL '1' MONTH")
+        ->first();
+
+      if ($PesquisaRespostaE)
+        continue;
       
       $PesquisaResposta = new \App\PesquisaResposta();
       $PesquisaResposta->cd_pergunta         = $t_cd_pergunta;
@@ -82,6 +171,7 @@ class PesquisaController extends Controller
       $PesquisaResposta->dt_resposta         = date('c');
       $PesquisaResposta->ds_resposta         = ($t_id_tipo_pergunta != 3 ? $t_ds_resposta : "");
       $PesquisaResposta->ds_justificativa    = $t_ds_justificativa;
+      $PesquisaResposta->id_identificado     = $t_id_identificado;
       $PesquisaResposta->save();
       
       if ($t_id_tipo_pergunta == 3)

@@ -42,7 +42,10 @@
           $form->addInputField($ds_resposta);
           
           if (isset($ds_justificativa) && is_object($ds_justificativa))
+          {
             $form->addInputField($ds_justificativa);
+            $form->addInputField($id_identifica);
+          }
 
           unset($ds_resposta);
           unset($ds_justificativa);
@@ -79,7 +82,12 @@
           case "3": //Seleção
             $ds_resposta = new \VMaker\VInputSelect($id);
             $ds_resposta->setLabel($obj->ds_pergunta);
-            $ds_resposta->setExtraLabel($obj->ds_comentario);
+
+            if ($obj->ds_analise)
+              $ds_resposta->setExtraLabel("<b>Analise do responsável sobre sua última avaliação: </b>".$obj->ds_analise."</br></br>".$obj->ds_comentario);
+            else
+              $ds_resposta->setExtraLabel($obj->ds_comentario);
+
             $ds_resposta->setRequired($obj->id_obrigatorio);
             $ds_resposta->setOpcional();
             $ds_resposta->addOption($obj->cd_pergunta_opcao_item, $obj->nm_pergunta_opcao_item);
@@ -92,7 +100,6 @@
             $nr_pergunta->setRequired($obj->id_obrigatorio);
             $nr_pergunta->addOption($obj->cd_pergunta_opcao_item, $obj->nm_pergunta_opcao_item);
           break;
-         * 
          */
         }
 
@@ -102,6 +109,11 @@
 
           $ds_justificativa = new \VMaker\VInputText("ds_justificativa_{$t_qt_perguntas}");
           $ds_justificativa->setExtraLabel("(Justificativa) Favor justificar se a sua resposta for menor ou igual a {$vlNotaJustificativa}.");
+
+          $id_identifica = new VMaker\VInputSelect("id_identificado_{$t_qt_perguntas}");
+          $id_identifica->setLabel("Deseja identificar-se?");
+          $id_identifica->addOption('0', 'Não');
+          $id_identifica->addOption('1', 'Sim');
         }
       }
       elseif ($ds_resposta instanceof \VMaker\VInputSelect)
@@ -113,12 +125,14 @@
     $form->addInputField($ds_resposta);
 
     if (isset($ds_justificativa) && is_object($ds_justificativa))
+    {
       $form->addInputField($ds_justificativa);
+      $form->addInputField($id_identifica);
+    }
 
     //qt_perguntas
     $qt_perguntas = new \VMaker\VInputHidden("qt_perguntas", $t_qt_perguntas);
     $form->addInputField($qt_perguntas);
-    
 
     $submit = new \VMaker\VInputSubmit("submit", "Enviar");
     $submit->setClass("btn btn-success");

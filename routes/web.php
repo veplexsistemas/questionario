@@ -23,6 +23,7 @@ Route::group(['middleware' => ['auth', 'verificaContrato'], 'prefix' => '/pesqui
   Route::get("/",               "PesquisaController@index");
   Route::get("/responder/{id}", "PesquisaController@responder")->where('id', '[0-9]+');
   Route::post("/registraRespostas", "PesquisaController@registraRespostas");
+  Route::post("/registraAnalise", "PesquisaController@registraAnalise");
 });
 
 Route::get('/erro', function($msgErro = ""){
